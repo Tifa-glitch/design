@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>設計工單 Dashboard</title>
+<style>
+:root {
+  /* ── 藍色系主色 ── */
+  --primary: #1A56DB;
+  --primary-dark: #1343B0;
+  --primary-bg: #EEF4FF;
+  --primary-mid: #B4C6F5;
+
+  /* ── 來源顏色 ── */
+  --ec: #1A56DB;   --ec-bg: #EEF4FF;
+  --mkt: #0E9F6E;  --mkt-bg: #E8F8F2;
+  --soc: #7C3AED;  --soc-bg: #F3EDFE;
+
+  /* ── 狀態顏色 ── */
+  --danger: #C81E1E; --danger-bg: #FDF2F2;
+  --warn-bg: #FEF5E7; --warn: #92550A;
+  --done-bg: #E8F8F2; --done: #0E6B4A;
+  --proof-bg: #FEFCE8; --proof: #7A5C00;
+  --neutral-bg: #F3F4F6; --neutral: #4B5563;
+  --review-bg: #FDF2F2; --review: #C81E1E;
+
+  /* ── 設計師產能條 ── */
+  --bar-a: #1A56DB;
+  --bar-b: #E24B4A;
+  --bar-c: #7C3AED;
+
+  /* ── 介面基礎 ── */
+  --text: #111928; --text2: #6B7280; --text3: #9CA3AF;
+  --border: #E5E7EB; --surface: #F9FAFB; --white: #FFF;
+  --r: 10px; --r-sm: 6px; --r-pill: 100px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; }
+
+.page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* ── Topbar ── */
+.topbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; }
+.topbar-left h1 { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; }
+.topbar-left .sub { font-size: 13px; color: var(--text3); margin-top: 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.legend-row { display: flex; gap: 10px; }
+.leg { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text3); }
+.leg-dot { width: 7px; height: 7px; border-radius: 50%; }
+.btn-row { display: flex; gap: 8px; }
+.btn { font-size: 12px; padding: 7px 14px; border-radius: var(--r-sm); border: 1px solid var(--border); background: var(--white); color: var(--text); cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+.btn:hover { background: var(--surface); }
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); }
+
+/* ── Alert ── */
+.alert-bar { display: flex; align-items: center; gap: 8px; background: var(--danger-bg); border: 1px solid #FCA5A5; border-radius: var(--r-sm); padding: 10px 16px; margin-bottom: 1.25rem; font-size: 13px; color: var(--danger); font-weight: 500; }
+
+/* ── Stat cards ── */
+.stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 1.5rem; }
+.stat-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 1.1rem 1.25rem; }
+.stat-card.highlight { border-color: var(--primary-mid); background: var(--primary-bg); }
+.stat-label { font-size: 12px; color: var(--text3); margin-bottom: 8px; font-weight: 500; }
+.stat-val { font-size: 32px; font-weight: 700; color: var(--text); line-height: 1; letter-spacing: -1px; }
+.stat-val.primary { color: var(--primary); }
+.stat-val.danger { color: var(--danger); }
+.stat-val.warn { color: #B45309; }
+.stat-sub { font-size: 11px; color: var(--text3); margin-top: 8px; line-height: 1.6; }
+
+/* ── Section ── */
+.section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 12px; }
+
+/* ── Designer cards ── */
+.designer-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 1.75rem; }
+.dcard { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 1.25rem; }
+.dcard-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0; }
+.av-a { background: var(--ec-bg); color: var(--ec); }
+.av-b { background: var(--mkt-bg); color: var(--mkt); }
+.av-c { background: var(--soc-bg); color: var(--soc); }
+.dname { font-size: 15px; font-weight: 600; color: var(--text); }
+.dtotal { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.drow { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+.drow-label { font-size: 12px; color: var(--text2); }
+.drow-num { font-size: 14px; font-weight: 600; color: var(--text); }
+.bar-wrap { background: #E5E7EB; border-radius: 4px; height: 5px; margin: 12px 0 10px; overflow: hidden; }
+.bar { height: 5px; border-radius: 4px; }
+.dtag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 9px; border-radius: var(--r-pill); font-weight: 500; }
+.dtag-hot { background: var(--danger-bg); color: var(--danger); border: 1px solid #FCA5A5; }
+.dtag-ok  { background: var(--done-bg); color: var(--done); border: 1px solid #6EE7B7; }
+.dtag-mid { background: var(--warn-bg); color: var(--warn); border: 1px solid #FDE68A; }
+
+/* ── Table ── */
+.table-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.tab-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.tab { font-size: 12px; padding: 5px 12px; border-radius: var(--r-pill); border: 1px solid var(--border); background: var(--white); color: var(--text2); cursor: pointer; font-weight: 500; }
+.tab:hover:not(.on) { background: var(--surface); }
+.tab.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.table-wrap { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead th { background: var(--primary-bg); padding: 9px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--primary-dark); border-bottom: 1px solid var(--primary-mid); white-space: nowrap; letter-spacing: .04em; }
+tbody td { padding: 9px 14px; border-bottom: 1px solid #F3F4F6; vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--primary-bg); }
+.ticket-name { font-weight: 600; font-size: 12px; color: var(--text); }
+.ticket-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* ── Badges ── */
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--r-pill); font-weight: 500; white-space: nowrap; }
+.b-ec  { background: var(--ec-bg);  color: var(--ec); }
+.b-mkt { background: var(--mkt-bg); color: var(--mkt); }
+.b-soc { background: var(--soc-bg); color: var(--soc); }
+.b-wait   { background: var(--neutral-bg); color: var(--neutral); }
+.b-prog   { background: var(--primary-bg); color: var(--primary); }
+.b-proof  { background: var(--proof-bg);   color: var(--proof); }
+.b-done   { background: var(--done-bg);    color: var(--done); }
+.b-review { background: var(--review-bg);  color: var(--review); }
+.b-ok     { background: var(--done-bg);    color: var(--done); }
+
+.dl { font-size: 11px; color: var(--text3); white-space: nowrap; }
+.dl.hot  { color: var(--danger); font-weight: 700; }
+.dl.soon { color: #B45309; font-weight: 600; }
+
+/* ── Bottom bar ── */
+.api-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text3); margin-top: 1.25rem; }
+.api-dot { width: 6px; height: 6px; border-radius: 50%; background: #FF9800; }
+.api-dot.live { background: #10B981; }
+#countdown { margin-left: 8px; color: var(--primary); font-weight: 500; }
+
+@media (max-width: 860px) {
+  .stat-grid { grid-template-columns: repeat(2,1fr); }
+  .designer-grid { grid-template-columns: repeat(2,1fr); }
+  .topbar { flex-direction: column; gap: 12px; }
+}
+@media (max-width: 540px) {
+  .stat-grid, .designer-grid { grid-template-columns: 1fr; }
+  .page { padding: 1rem; }
+  .stat-val { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>設計工單 Dashboard</h1>
+      <div class="sub">
+        電商 · 行銷 · 社群 · 自動從 Google Sheets 三分頁彙整
+        <div class="legend-row">
+          <div class="leg"><div class="leg-dot" style="background:var(--ec)"></div>電商</div>
+          <div class="leg"><div class="leg-dot" style="background:var(--mkt)"></div>行銷</div>
+          <div class="leg"><div class="leg-dot" style="background:var(--soc)"></div>社群</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="refreshData()">↺ 重新整理</button>
+      <button class="btn btn-primary" onclick="alert('請先完成 Apps Script 設定，再將 URL 填入程式碼的 API_URL 欄位。')">串接 Sheets ↗</button>
+    </div>
+  </div>
+
+  <div class="alert-bar" id="alert-bar">
+    ⚠ <span id="alert-text">讀取中…</span>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card highlight">
+      <div class="stat-label">進行中工單</div>
+      <div class="stat-val primary" id="s-total">—</div>
+      <div class="stat-sub" id="s-total-sub"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">待主管審核</div>
+      <div class="stat-val danger" id="s-review">—</div>
+      <div class="stat-sub">需要你處理</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">未填提稿日</div>
+      <div class="stat-val warn" id="s-noDL">—</div>
+      <div class="stat-sub">進行中但截止日空白</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">已完成（累計）</div>
+      <div class="stat-val" id="s-done">—</div>
+      <div class="stat-sub" id="s-done-sub"></div>
+    </div>
+  </div>
+
+  <div class="section-title">設計師產能</div>
+  <div class="designer-grid" id="designer-grid"></div>
+
+  <div class="table-head">
+    <div class="section-title" style="margin-bottom:0">工單明細</div>
+    <div class="tab-row">
+      <button class="tab on"  onclick="setTab('all',this)">全部</button>
+      <button class="tab" onclick="setTab('電商',this)">電商</button>
+      <button class="tab" onclick="setTab('行銷',this)">行銷</button>
+      <button class="tab" onclick="setTab('社群',this)">社群</button>
+      <button class="tab" onclick="setTab('待審核',this)">待主管審核</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>來源</th><th>案件名稱</th><th>媒體版位</th>
+          <th>設計師</th><th>執行狀態</th><th>提稿截止</th><th>主管審核</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="api-row">
+    <div class="api-dot" id="api-dot"></div>
+    <span id="api-label">示意資料模式</span>
+    <span id="countdown"></span>
+    <span style="margin-left:auto" id="update-time"></span>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbwknAZ6eV_5O-Pvlzpobn0oIuXPd9Czr0B3-crNrI4PpvarCl5hm8z5xW35APovjtV5/exec';
+
+// ── 示意資料（串接前用，數字對應試算表實際筆數）──
+const DEMO = {
+  stats: { total:46, review:2, noDL:18, done:154, ec:28, mkt:9, soc:9, ec_done:115, mkt_done:31, soc_done:8 },
+  designers: [
+    { name:'孟雅', av:'av-a', init:'孟', prog:3, proof:0, wait:10, urgent:'截止 7/20 益生菌8月BN', urgentLevel:'mid' },
+    { name:'小容', av:'av-b', init:'容', prog:0, proof:0, wait:9,  urgent:'截止 7/30 父親節BN',   urgentLevel:'mid' },
+    { name:'Gigi', av:'av-c', init:'G',  prog:2, proof:0, wait:8,  urgent:'截止 6/28 DGC素材',    urgentLevel:'hot' },
+  ],
+  tickets: [
+    { src:'電商', name:'商城益生菌8月BN',       sub:'#53 · 圖文BN(手機)', pos:'大法商城圖文BN(手機)', designer:'孟雅', exec:'製作中', dl:'6/26', dlLevel:'soon', mgr:'製作中' },
+    { src:'電商', name:'商城易利氣8月BN',        sub:'#60 · FB BN',        pos:'FB BN',               designer:'Gigi', exec:'待排程', dl:'7/10', dlLevel:'',     mgr:'製作中' },
+    { src:'電商', name:'商城易利氣父親節包裝BN', sub:'#70 · PC版',         pos:'大法商城 BN上方輪播PC版', designer:'小容', exec:'待排程', dl:'7/30', dlLevel:'', mgr:'製作中' },
+    { src:'電商', name:'商城易利氣父親節包裝BN', sub:'#70 · 手機版',       pos:'大法商城 BN上方輪播手機版', designer:'小容', exec:'待排程', dl:'7/30', dlLevel:'', mgr:'製作中' },
+    { src:'電商', name:'商城益生菌9月BN',        sub:'#54 · 圖文BN(手機)', pos:'大法商城圖文BN(手機)', designer:'Gigi', exec:'製作中', dl:'6/25', dlLevel:'soon', mgr:'製作中' },
+    { src:'電商', name:'商城易利氣9月BN',        sub:'#55 · 圖文BN(手機)', pos:'大法商城圖文BN(手機)', designer:'Gigi', exec:'製作中', dl:'6/25', dlLevel:'soon', mgr:'製作中' },
+    { src:'電商', name:'商城益生菌10月投廣BN',   sub:'#63 · FB BN',        pos:'FB BN',               designer:'Gigi', exec:'待排程', dl:'9/10', dlLevel:'',     mgr:'製作中' },
+    { src:'電商', name:'商城益生菌11月投廣BN',   sub:'#65 · FB BN',        pos:'FB BN',               designer:'小容', exec:'待排程', dl:'10/12',dlLevel:'',     mgr:'製作中' },
+    { src:'電商', name:'商城益生菌12月投廣BN',   sub:'#67 · FB BN',        pos:'FB BN',               designer:'孟雅', exec:'待排程', dl:'11/10',dlLevel:'',     mgr:'製作中' },
+    { src:'行銷', name:'脫酸寧EX 外盒/瓶標',    sub:'包裝', pos:'包裝',    designer:'小容', exec:'待排程', dl:'6/30', dlLevel:'soon', mgr:'製作中' },
+    { src:'行銷', name:'改源IB HS素材',          sub:'數位', pos:'數位',    designer:'孟雅', exec:'待排程', dl:'6/30', dlLevel:'soon', mgr:'製作中' },
+    { src:'行銷', name:'改源IB 數位DGC素材',     sub:'數位', pos:'數位',    designer:'小容', exec:'待排程', dl:'7/20', dlLevel:'',     mgr:'製作中' },
+    { src:'行銷', name:'易利氣 數位DGC素材',     sub:'數位', pos:'數位',    designer:'Gigi', exec:'待排程', dl:'7/31', dlLevel:'',     mgr:'製作中' },
+    { src:'社群', name:'易利氣 數位DGC素材×3',  sub:'FB/IG', pos:'FB/IG',  designer:'Gigi', exec:'製作中', dl:'6/28', dlLevel:'hot',  mgr:'待審核' },
+    { src:'社群', name:'改源IB 數位DGC素材×3',  sub:'FB/IG', pos:'FB/IG',  designer:'Gigi', exec:'製作中', dl:'6/28', dlLevel:'hot',  mgr:'製作中' },
+    { src:'社群', name:'改源IB 7/7世界巧克力日', sub:'FB/IG', pos:'FB/IG', designer:'Gigi', exec:'待排程', dl:'7/6',  dlLevel:'',     mgr:'待審核' },
+    { src:'社群', name:'改源IB 經痛類型衛教圖',  sub:'FB/IG', pos:'FB/IG', designer:'Gigi', exec:'待排程', dl:'7/10', dlLevel:'',     mgr:'待審核' },
+    { src:'社群', name:'易利氣 網頁特點轉化',    sub:'FB/IG', pos:'FB/IG', designer:'Gigi', exec:'待排程', dl:'',     dlLevel:'',     mgr:'製作中' },
+    { src:'社群', name:'Wakamoto 空心菜觀察日記',sub:'FB',    pos:'FB',    designer:'Gigi', exec:'待排程', dl:'',     dlLevel:'',     mgr:'製作中' },
+  ]
+};
+
+let allData = null, currentTab = 'all';
+
+const srcBadge = s => `<span class="badge ${{電商:'b-ec',行銷:'b-mkt',社群:'b-soc'}[s]||''}">${s}</span>`;
+const execBadge = s => `<span class="badge ${{待排程:'b-wait',製作中:'b-prog',過稿中:'b-proof',已完稿:'b-done',待審核:'b-review'}[s]||'b-wait'}">${s}</span>`;
+const mgrBadge = s => `<span class="badge ${s==='待審核'?'b-review':'b-ok'}">${s}</span>`;
+const dlSpan = (dl,lv) => dl ? `<span class="dl ${lv||''}">${dl}</span>` : '<span class="dl">—</span>';
+const barColor = n => ({孟雅:'var(--bar-a)',小容:'var(--bar-b)',Gigi:'var(--bar-c)'}[n]||'#aaa');
+
+function render(data) {
+  allData = data;
+  const s = data.stats;
+
+  document.getElementById('s-total').textContent = s.total;
+  document.getElementById('s-total-sub').textContent = `電商 ${s.ec} · 行銷 ${s.mkt} · 社群 ${s.soc}`;
+  document.getElementById('s-review').textContent = s.review;
+  document.getElementById('s-noDL').textContent = s.noDL;
+  document.getElementById('s-done').textContent = s.done;
+  document.getElementById('s-done-sub').textContent = `電商 ${s.ec_done} · 行銷 ${s.mkt_done} · 社群 ${s.soc_done}`;
+
+  const hot = data.tickets.filter(t => t.dlLevel === 'hot');
+  const ab = document.getElementById('alert-bar');
+  if (hot.length || s.noDL > 0) {
+    ab.style.display = 'flex';
+    document.getElementById('alert-text').textContent =
+      `${hot.length} 張工單今日截止或已逾期 · ${s.noDL} 件進行中工單未填提稿日`;
+  } else { ab.style.display = 'none'; }
+
+  document.getElementById('designer-grid').innerHTML = data.designers.map(d => {
+    const total = d.prog + d.proof + d.wait;
+    const pct = Math.min(Math.round(total / 25 * 100), 100);
+    const tagCls = {hot:'dtag-hot',ok:'dtag-ok',mid:'dtag-mid'}[d.urgentLevel]||'dtag-mid';
+    const icon = {hot:'⏰',ok:'✓',mid:'📅'}[d.urgentLevel]||'';
+    return `<div class="dcard">
+      <div class="dcard-head">
+        <div class="avatar ${d.av}">${d.init}</div>
+        <div><div class="dname">${d.name}</div><div class="dtotal">合計 ${total} 件進行中</div></div>
+      </div>
+      <div class="drow"><span class="drow-label">製作中</span><span class="drow-num">${d.prog}</span></div>
+      <div class="drow"><span class="drow-label">過稿中</span><span class="drow-num">${d.proof}</span></div>
+      <div class="drow"><span class="drow-label">待排程</span><span class="drow-num">${d.wait}</span></div>
+      <div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${barColor(d.name)}"></div></div>
+      <span class="dtag ${tagCls}">${icon} ${d.urgent}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('update-time').textContent =
+    new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'}) + ' 更新';
+  renderTable();
+}
+
+function renderTable() {
+  if (!allData) return;
+  let rows = allData.tickets;
+  if (currentTab === '電商') rows = rows.filter(t => t.src === '電商');
+  else if (currentTab === '行銷') rows = rows.filter(t => t.src === '行銷');
+  else if (currentTab === '社群') rows = rows.filter(t => t.src === '社群');
+  else if (currentTab === '待審核') rows = rows.filter(t => t.mgr === '待審核');
+
+  const tb = document.getElementById('tbody');
+  if (!rows.length) {
+    tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#aaa">沒有符合條件的工單</td></tr>';
+    return;
+  }
+  tb.innerHTML = rows.map(t => `<tr>
+    <td>${srcBadge(t.src)}</td>
+    <td><div class="ticket-name">${t.name}</div><div class="ticket-sub">${t.sub}</div></td>
+    <td style="font-size:11px;color:var(--text2);max-width:140px">${t.pos}</td>
+    <td style="font-size:12px">${t.designer||'<span style="color:#ccc">未分配</span>'}</td>
+    <td>${execBadge(t.exec)}</td>
+    <td>${dlSpan(t.dl,t.dlLevel)}</td>
+    <td>${mgrBadge(t.mgr)}</td>
+  </tr>`).join('');
+}
+
+function setTab(val, el) {
+  currentTab = val;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  renderTable();
+}
+
+// ── Auto refresh ──
+let _cd = 30, _timer = null;
+const _cdEl = () => document.getElementById('countdown');
+
+function startAutoRefresh() {
+  if (_timer) clearInterval(_timer);
+  _cd = 30;
+  _cdEl() && (_cdEl().textContent = `· ${_cd}s 後自動更新`);
+  _timer = setInterval(() => {
+    _cd--;
+    _cdEl() && (_cdEl().textContent = `· ${_cd}s 後自動更新`);
+    if (_cd <= 0) { _cd = 30; refreshData(); }
+  }, 1000);
+}
+
+async function refreshData() {
+  _cd = 30;
+  if (API_URL) {
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      document.getElementById('api-dot').className = 'api-dot live';
+      document.getElementById('api-label').textContent = '即時資料（Sheets 同步）';
+      render(data);
+    } catch(e) {
+      document.getElementById('api-label').textContent = '無法連線，顯示上次資料';
+    }
+  } else {
+    render(DEMO);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  refreshData();
+  startAutoRefresh();
+});
+</script>
+</body>
+</html>
