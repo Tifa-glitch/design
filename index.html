@@ -6,373 +6,502 @@
 <title>設計工單 Dashboard</title>
 <style>
 :root {
-  /* ── 藍色系主色 ── */
-  --primary: #1A56DB;
-  --primary-dark: #1343B0;
-  --primary-bg: #EEF4FF;
-  --primary-mid: #B4C6F5;
-
-  /* ── 來源顏色 ── */
-  --ec: #1A56DB;   --ec-bg: #EEF4FF;
-  --mkt: #0E9F6E;  --mkt-bg: #E8F8F2;
-  --soc: #7C3AED;  --soc-bg: #F3EDFE;
-
-  /* ── 狀態顏色 ── */
-  --danger: #C81E1E; --danger-bg: #FDF2F2;
-  --warn-bg: #FEF5E7; --warn: #92550A;
-  --done-bg: #E8F8F2; --done: #0E6B4A;
-  --proof-bg: #FEFCE8; --proof: #7A5C00;
-  --neutral-bg: #F3F4F6; --neutral: #4B5563;
-  --review-bg: #FDF2F2; --review: #C81E1E;
-
-  /* ── 設計師產能條 ── */
-  --bar-a: #1A56DB;
-  --bar-b: #E24B4A;
-  --bar-c: #7C3AED;
-
-  /* ── 介面基礎 ── */
-  --text: #111928; --text2: #6B7280; --text3: #9CA3AF;
-  --border: #E5E7EB; --surface: #F9FAFB; --white: #FFF;
-  --r: 10px; --r-sm: 6px; --r-pill: 100px;
+  --primary:#1A56DB; --primary-dark:#1343B0; --primary-bg:#EEF4FF; --primary-mid:#B4C6F5;
+  --ec:#1A56DB; --ec-bg:#EEF4FF;
+  --mkt:#0E9F6E; --mkt-bg:#E8F8F2;
+  --danger:#C81E1E; --danger-bg:#FDF2F2;
+  --warn:#92550A; --warn-bg:#FEF5E7;
+  --done:#0E6B4A; --done-bg:#E8F8F2;
+  --proof:#7A5C00; --proof-bg:#FEFCE8;
+  --neutral:#4B5563; --neutral-bg:#F3F4F6;
+  --text:#111928; --text2:#4B5563; --text3:#8A919E;
+  --border:#E5E7EB; --surface:#F7F8FA; --white:#FFF;
+  --r:10px; --r-sm:6px; --pill:100px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; background: var(--surface); color: var(--text); min-height: 100vh; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei","Helvetica Neue",Arial,sans-serif;background:var(--surface);color:var(--text);min-height:100vh;font-variant-numeric:tabular-nums}
+.page{max-width:1180px;margin:0 auto;padding:2rem 1.5rem 3rem}
+button,select,input{font:inherit}
 
-.page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+/* Topbar */
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:1.25rem}
+h1{font-size:22px;font-weight:700;letter-spacing:-.3px}
+.sub{font-size:13px;color:var(--text3);margin-top:5px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.leg{display:inline-flex;align-items:center;gap:5px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.btn{font-size:12px;padding:7px 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--white);color:var(--text);cursor:pointer;font-weight:500}
+.btn:hover{background:var(--surface)}
 
-/* ── Topbar ── */
-.topbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; }
-.topbar-left h1 { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; }
-.topbar-left .sub { font-size: 13px; color: var(--text3); margin-top: 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.legend-row { display: flex; gap: 10px; }
-.leg { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text3); }
-.leg-dot { width: 7px; height: 7px; border-radius: 50%; }
-.btn-row { display: flex; gap: 8px; }
-.btn { font-size: 12px; padding: 7px 14px; border-radius: var(--r-sm); border: 1px solid var(--border); background: var(--white); color: var(--text); cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 5px; }
-.btn:hover { background: var(--surface); }
-.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
-.btn-primary:hover { background: var(--primary-dark); }
+/* Notices */
+.demo-bar{background:var(--proof-bg);border:1px solid #F3E39B;color:var(--proof);border-radius:var(--r-sm);padding:9px 14px;font-size:12.5px;margin-bottom:12px;display:none}
+.alert-bar{display:none;flex-wrap:wrap;gap:6px 18px;background:var(--danger-bg);border:1px solid #FCA5A5;border-radius:var(--r-sm);padding:10px 16px;margin-bottom:1.25rem;font-size:13px;color:var(--danger);font-weight:500}
+.alert-bar a{color:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 
-/* ── Alert ── */
-.alert-bar { display: flex; align-items: center; gap: 8px; background: var(--danger-bg); border: 1px solid #FCA5A5; border-radius: var(--r-sm); padding: 10px 16px; margin-bottom: 1.25rem; font-size: 13px; color: var(--danger); font-weight: 500; }
+/* Stats */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.75rem}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.05rem 1.2rem;cursor:pointer;transition:border-color .15s}
+.stat-card:hover{border-color:var(--primary-mid)}
+.stat-card.hl{border-color:var(--primary-mid);background:var(--primary-bg)}
+.stat-label{font-size:12px;color:var(--text3);margin-bottom:8px;font-weight:500}
+.stat-val{font-size:32px;font-weight:700;line-height:1;letter-spacing:-1px}
+.stat-val small{font-size:15px;font-weight:600;letter-spacing:0;margin-left:6px;color:var(--text3)}
+.c-primary{color:var(--primary)} .c-danger{color:var(--danger)} .c-warn{color:#B45309}
+.stat-sub{font-size:11.5px;color:var(--text3);margin-top:8px;line-height:1.6}
 
-/* ── Stat cards ── */
-.stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 1.5rem; }
-.stat-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 1.1rem 1.25rem; }
-.stat-card.highlight { border-color: var(--primary-mid); background: var(--primary-bg); }
-.stat-label { font-size: 12px; color: var(--text3); margin-bottom: 8px; font-weight: 500; }
-.stat-val { font-size: 32px; font-weight: 700; color: var(--text); line-height: 1; letter-spacing: -1px; }
-.stat-val.primary { color: var(--primary); }
-.stat-val.danger { color: var(--danger); }
-.stat-val.warn { color: #B45309; }
-.stat-sub { font-size: 11px; color: var(--text3); margin-top: 8px; line-height: 1.6; }
+/* Section */
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.sec-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.06em}
+.sec-note{font-size:11.5px;color:var(--text3)}
 
-/* ── Section ── */
-.section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 12px; }
+/* Designer cards */
+.designer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:2rem}
+.dcard{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.15rem 1.2rem;cursor:pointer;transition:border-color .15s}
+.dcard:hover,.dcard.on{border-color:var(--primary)}
+.dhead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--primary-bg);color:var(--primary);flex-shrink:0}
+.dname{font-size:15px;font-weight:700}
+.dmeta{font-size:11.5px;color:var(--text3);margin-top:2px}
+.util{margin-left:auto;text-align:right}
+.util-num{font-size:22px;font-weight:700;line-height:1}
+.util-lbl{font-size:10.5px;color:var(--text3);margin-top:3px}
+.loadbar{position:relative;display:flex;height:10px;background:#EEF0F3;border-radius:5px;overflow:hidden;margin:4px 0 6px}
+.seg{height:100%}
+.seg-res{background:repeating-linear-gradient(135deg,#C9CED6 0 4px,#E3E6EB 4px 8px)}
+.seg-ec{background:var(--ec)} .seg-mkt{background:var(--mkt)}
+.loadbar.over{box-shadow:0 0 0 2px var(--danger)}
+.load-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--text3);margin-bottom:10px}
+.load-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.drows{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:12px}
+.drow{background:var(--surface);border-radius:var(--r-sm);padding:6px 4px;text-align:center}
+.drow b{display:block;font-size:15px}
+.drow span{font-size:10.5px;color:var(--text3)}
+.dtag{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:var(--pill);font-weight:500;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-hot{background:var(--danger-bg);color:var(--danger);border:1px solid #FCA5A5}
+.t-mid{background:var(--warn-bg);color:var(--warn);border:1px solid #FDE68A}
+.t-ok{background:var(--done-bg);color:var(--done);border:1px solid #A7E3C9}
+.dfoot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--text3)}
 
-/* ── Designer cards ── */
-.designer-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 1.75rem; }
-.dcard { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 1.25rem; }
-.dcard-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-.avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0; }
-.av-a { background: var(--ec-bg); color: var(--ec); }
-.av-b { background: var(--mkt-bg); color: var(--mkt); }
-.av-c { background: var(--soc-bg); color: var(--soc); }
-.dname { font-size: 15px; font-weight: 600; color: var(--text); }
-.dtotal { font-size: 12px; color: var(--text3); margin-top: 2px; }
-.drow { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
-.drow-label { font-size: 12px; color: var(--text2); }
-.drow-num { font-size: 14px; font-weight: 600; color: var(--text); }
-.bar-wrap { background: #E5E7EB; border-radius: 4px; height: 5px; margin: 12px 0 10px; overflow: hidden; }
-.bar { height: 5px; border-radius: 4px; }
-.dtag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 9px; border-radius: var(--r-pill); font-weight: 500; }
-.dtag-hot { background: var(--danger-bg); color: var(--danger); border: 1px solid #FCA5A5; }
-.dtag-ok  { background: var(--done-bg); color: var(--done); border: 1px solid #6EE7B7; }
-.dtag-mid { background: var(--warn-bg); color: var(--warn); border: 1px solid #FDE68A; }
+/* Table controls */
+.controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{font-size:12px;padding:5px 12px;border-radius:var(--pill);border:1px solid var(--border);background:var(--white);color:var(--text2);cursor:pointer;font-weight:500}
+.tab:hover:not(.on){background:var(--surface)}
+.tab.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.tab .n{opacity:.7;margin-left:3px}
+.filters{display:flex;gap:6px}
+.filters select,.filters input{font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--white);color:var(--text)}
+.filters input{width:160px}
 
-/* ── Table ── */
-.table-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.tab-row { display: flex; gap: 6px; flex-wrap: wrap; }
-.tab { font-size: 12px; padding: 5px 12px; border-radius: var(--r-pill); border: 1px solid var(--border); background: var(--white); color: var(--text2); cursor: pointer; font-weight: 500; }
-.tab:hover:not(.on) { background: var(--surface); }
-.tab.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+.table-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:860px}
+thead th{background:var(--primary-bg);padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--primary-dark);border-bottom:1px solid var(--primary-mid);white-space:nowrap}
+tbody td{padding:9px 12px;border-bottom:1px solid #F1F2F4;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#FAFBFF}
+tr.row-over td:first-child{box-shadow:inset 3px 0 0 var(--danger)}
+tr.row-soon td:first-child{box-shadow:inset 3px 0 0 #F59E0B}
+.tn{font-weight:600;color:var(--text)}
+.ts{font-size:11px;color:var(--text3);margin-top:2px}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--pill);font-weight:500;white-space:nowrap}
+.b-ec{background:var(--ec-bg);color:var(--ec)} .b-mkt{background:var(--mkt-bg);color:var(--mkt)}
+.b-wait{background:var(--neutral-bg);color:var(--neutral)} .b-prog{background:var(--primary-bg);color:var(--primary)}
+.b-proof{background:var(--proof-bg);color:var(--proof)} .b-done{background:var(--done-bg);color:var(--done)}
+.b-review{background:var(--danger-bg);color:var(--danger)} .b-pause{background:#EDEBFA;color:#5B4BB7}
+.b-empty{background:#fff;color:var(--text3);border:1px dashed #D1D5DB}
+.dl{white-space:nowrap;font-size:12px}
+.dl.over{color:var(--danger);font-weight:700}
+.dl.soon{color:#B45309;font-weight:600}
+.dl .rel{font-size:10.5px;display:block;font-weight:500}
+.dl2{font-size:10.5px;color:var(--text3);display:block;margin-top:2px}
+.muted{color:#C3C7CF}
+.empty td{text-align:center;padding:2.2rem;color:var(--text3)}
 
-.table-wrap { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-thead th { background: var(--primary-bg); padding: 9px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--primary-dark); border-bottom: 1px solid var(--primary-mid); white-space: nowrap; letter-spacing: .04em; }
-tbody td { padding: 9px 14px; border-bottom: 1px solid #F3F4F6; vertical-align: middle; }
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: var(--primary-bg); }
-.ticket-name { font-weight: 600; font-size: 12px; color: var(--text); }
-.ticket-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+/* Data check */
+details.check{margin-top:1.25rem;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:0}
+details.check summary{cursor:pointer;padding:11px 16px;font-size:12.5px;font-weight:600;color:var(--text2);list-style:none;display:flex;justify-content:space-between}
+details.check summary::-webkit-details-marker{display:none}
+details.check summary::after{content:'展開 ▾';font-weight:500;color:var(--text3);font-size:11.5px}
+details.check[open] summary::after{content:'收合 ▴'}
+.check-list{border-top:1px solid var(--border);max-height:320px;overflow:auto}
+.check-item{display:grid;grid-template-columns:52px 70px 1fr auto;gap:10px;padding:7px 16px;font-size:12px;border-bottom:1px solid #F3F4F6;align-items:center}
+.check-item:last-child{border-bottom:none}
+.check-item .iss{color:#B45309;font-size:11.5px;text-align:right}
 
-/* ── Badges ── */
-.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--r-pill); font-weight: 500; white-space: nowrap; }
-.b-ec  { background: var(--ec-bg);  color: var(--ec); }
-.b-mkt { background: var(--mkt-bg); color: var(--mkt); }
-.b-soc { background: var(--soc-bg); color: var(--soc); }
-.b-wait   { background: var(--neutral-bg); color: var(--neutral); }
-.b-prog   { background: var(--primary-bg); color: var(--primary); }
-.b-proof  { background: var(--proof-bg);   color: var(--proof); }
-.b-done   { background: var(--done-bg);    color: var(--done); }
-.b-review { background: var(--review-bg);  color: var(--review); }
-.b-ok     { background: var(--done-bg);    color: var(--done); }
+.foot{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-top:1.25rem;flex-wrap:wrap}
+.api-dot{width:7px;height:7px;border-radius:50%;background:#F59E0B}
+.api-dot.live{background:#10B981}
 
-.dl { font-size: 11px; color: var(--text3); white-space: nowrap; }
-.dl.hot  { color: var(--danger); font-weight: 700; }
-.dl.soon { color: #B45309; font-weight: 600; }
-
-/* ── Bottom bar ── */
-.api-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text3); margin-top: 1.25rem; }
-.api-dot { width: 6px; height: 6px; border-radius: 50%; background: #FF9800; }
-.api-dot.live { background: #10B981; }
-#countdown { margin-left: 8px; color: var(--primary); font-weight: 500; }
-
-@media (max-width: 860px) {
-  .stat-grid { grid-template-columns: repeat(2,1fr); }
-  .designer-grid { grid-template-columns: repeat(2,1fr); }
-  .topbar { flex-direction: column; gap: 12px; }
-}
-@media (max-width: 540px) {
-  .stat-grid, .designer-grid { grid-template-columns: 1fr; }
-  .page { padding: 1rem; }
-  .stat-val { font-size: 26px; }
-}
+@media (max-width:900px){.stat-grid{grid-template-columns:repeat(2,1fr)}.designer-grid{grid-template-columns:1fr 1fr}.topbar{flex-direction:column}}
+@media (max-width:560px){.page{padding:1rem}.stat-grid,.designer-grid{grid-template-columns:1fr}.stat-val{font-size:26px}.filters{width:100%}.filters input{flex:1}}
 </style>
 </head>
 <body>
 <div class="page">
 
   <div class="topbar">
-    <div class="topbar-left">
+    <div>
       <h1>設計工單 Dashboard</h1>
       <div class="sub">
-        電商 · 行銷 · 社群 · 自動從 Google Sheets 三分頁彙整
-        <div class="legend-row">
-          <div class="leg"><div class="leg-dot" style="background:var(--ec)"></div>電商</div>
-          <div class="leg"><div class="leg-dot" style="background:var(--mkt)"></div>行銷</div>
-          <div class="leg"><div class="leg-dot" style="background:var(--soc)"></div>社群</div>
-        </div>
+        <span>電商 · 行銷素材｜自動彙整 Google Sheets</span>
+        <span class="leg"><span class="dot" style="background:var(--ec)"></span>電商</span>
+        <span class="leg"><span class="dot" style="background:var(--mkt)"></span>行銷</span>
       </div>
     </div>
-    <div class="btn-row">
+    <div style="display:flex;gap:8px">
       <button class="btn" onclick="refreshData()">↺ 重新整理</button>
-      <button class="btn btn-primary" onclick="alert('請先完成 Apps Script 設定，再將 URL 填入程式碼的 API_URL 欄位。')">串接 Sheets ↗</button>
+      <a class="btn" href="https://docs.google.com/spreadsheets/d/1Z3YHXWLPtjZ57cWMfaJstX9dtHdMkn309X0gKZUPl08/edit" target="_blank" rel="noopener" style="text-decoration:none">開啟試算表 ↗</a>
     </div>
   </div>
 
-  <div class="alert-bar" id="alert-bar">
-    ⚠ <span id="alert-text">讀取中…</span>
-  </div>
+  <div class="demo-bar" id="demo-bar"></div>
+  <div class="alert-bar" id="alert-bar"></div>
 
   <div class="stat-grid">
-    <div class="stat-card highlight">
+    <div class="stat-card hl" onclick="goTab('active')">
       <div class="stat-label">進行中工單</div>
-      <div class="stat-val primary" id="s-total">—</div>
-      <div class="stat-sub" id="s-total-sub"></div>
+      <div class="stat-val c-primary" id="s-active">—</div>
+      <div class="stat-sub" id="s-active-sub"></div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="goTab('review')">
       <div class="stat-label">待主管審核</div>
-      <div class="stat-val danger" id="s-review">—</div>
-      <div class="stat-sub">需要你處理</div>
+      <div class="stat-val c-danger" id="s-review">—</div>
+      <div class="stat-sub" id="s-review-sub">需要你處理</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">未填提稿日</div>
-      <div class="stat-val warn" id="s-noDL">—</div>
-      <div class="stat-sub">進行中但截止日空白</div>
+    <div class="stat-card" onclick="goTab('due')">
+      <div class="stat-label">已逾期 ／ 7 天內到期</div>
+      <div class="stat-val c-warn" id="s-due">—</div>
+      <div class="stat-sub" id="s-due-sub"></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">已完成（累計）</div>
-      <div class="stat-val" id="s-done">—</div>
-      <div class="stat-sub" id="s-done-sub"></div>
+    <div class="stat-card" style="cursor:default">
+      <div class="stat-label" id="s-month-lbl">本月完成</div>
+      <div class="stat-val" id="s-month">—</div>
+      <div class="stat-sub" id="s-month-sub"></div>
     </div>
   </div>
 
-  <div class="section-title">設計師產能</div>
+  <div class="sec-head">
+    <div class="sec-title">設計師負載</div>
+    <div class="sec-note" id="load-note"></div>
+  </div>
+  <div class="load-legend">
+    <span><i style="background:repeating-linear-gradient(135deg,#C9CED6 0 3px,#E3E6EB 3px 6px)"></i>社群/其他保留</span>
+    <span><i style="background:var(--ec)"></i>電商</span>
+    <span><i style="background:var(--mkt)"></i>行銷</span>
+    <span>· 點卡片可篩選該設計師工單</span>
+  </div>
   <div class="designer-grid" id="designer-grid"></div>
 
-  <div class="table-head">
-    <div class="section-title" style="margin-bottom:0">工單明細</div>
-    <div class="tab-row">
-      <button class="tab on"  onclick="setTab('all',this)">全部</button>
-      <button class="tab" onclick="setTab('電商',this)">電商</button>
-      <button class="tab" onclick="setTab('行銷',this)">行銷</button>
-      <button class="tab" onclick="setTab('社群',this)">社群</button>
-      <button class="tab" onclick="setTab('待審核',this)">待主管審核</button>
+  <div class="controls">
+    <div class="tabs" id="tabs"></div>
+    <div class="filters">
+      <select id="f-designer" onchange="VIEW.designer=this.value;renderAll()"></select>
+      <input id="f-q" type="search" placeholder="搜尋案件／品牌／版位" oninput="VIEW.q=this.value.trim();renderTable()">
     </div>
   </div>
-
   <div class="table-wrap">
     <table>
-      <thead>
-        <tr>
-          <th>來源</th><th>案件名稱</th><th>媒體版位</th>
-          <th>設計師</th><th>執行狀態</th><th>提稿截止</th><th>主管審核</th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>來源</th><th>案件</th><th>版位／工作項目</th><th>設計師</th>
+        <th>主管審核</th><th>設計執行</th><th>預計提稿</th><th>截止日</th>
+      </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
 
-  <div class="api-row">
-    <div class="api-dot" id="api-dot"></div>
-    <span id="api-label">示意資料模式</span>
-    <span id="countdown"></span>
+  <details class="check" id="check"><summary id="check-sum">資料檢查</summary><div class="check-list" id="check-list"></div></details>
+
+  <div class="foot">
+    <span class="api-dot" id="api-dot"></span><span id="api-label">讀取中…</span>
+    <span id="countdown" style="color:var(--primary)"></span>
     <span style="margin-left:auto" id="update-time"></span>
   </div>
 </div>
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbwknAZ6eV_5O-Pvlzpobn0oIuXPd9Czr0B3-crNrI4PpvarCl5hm8z5xW35APovjtV5/exec';
+const REFRESH_SEC = 300;          // 5 分鐘自動更新
+const SOON_DAYS = 7;              // 幾天內算「即將到期」
 
-// ── 示意資料（串接前用，數字對應試算表實際筆數）──
+/* ── 示意資料：取自 2026/10/19 試算表內容（行銷工單已依 setupV3 規則拆分審核/執行狀態）── */
 const DEMO = {
-  stats: { total:46, review:2, noDL:18, done:154, ec:28, mkt:9, soc:9, ec_done:115, mkt_done:31, soc_done:8 },
-  designers: [
-    { name:'孟雅', av:'av-a', init:'孟', prog:3, proof:0, wait:10, urgent:'截止 7/20 益生菌8月BN', urgentLevel:'mid' },
-    { name:'小容', av:'av-b', init:'容', prog:0, proof:0, wait:9,  urgent:'截止 7/30 父親節BN',   urgentLevel:'mid' },
-    { name:'Gigi', av:'av-c', init:'G',  prog:2, proof:0, wait:8,  urgent:'截止 6/28 DGC素材',    urgentLevel:'hot' },
+  version:3, generatedAt:'2026-10-19T09:00:00',
+  config:{ configured:false, fullLoad:10,
+    designers:[{name:'孟雅',reserve:0},{name:'小容',reserve:0},{name:'Gigi',reserve:70,note:'暫填'}],
+    weights:{'新視覺':1,'延伸Resize':0.3,'包裝':3,'印刷':1.5,'平面':1,'數位':1,'影片':2,'其他':1} },
+  tickets:[
+    {src:'電商',row:4,id:'195',shared:'75',name:'大法商城易利氣8月投廣素材',pos:'大法商城 BN上方輪播手機版',type:'⭐新視覺',review:'製作中',designer:'Gigi',exec:'過稿中',filed:'2026-07-03',eta:'2026-07-17',due:'2026-07-30',requester:'90分'},
+    {src:'電商',row:5,id:'196',shared:'75',name:'大法商城易利氣8月投廣素材',pos:'大法商城 BN上方輪播PC版',type:'延伸Resize',review:'製作中',designer:'Gigi',exec:'待排程',filed:'2026-07-03',eta:'',due:'2026-07-30',requester:'90分'},
+    {src:'電商',row:6,id:'210',shared:'80',name:'MOMO 益生菌8/13後素材',pos:'momo 品牌站內BN',type:'⭐新視覺',review:'製作中',designer:'孟雅',exec:'過稿中',filed:'2026-07-15',eta:'2026-07-31',due:'2026-08-03',requester:'90分'},
+    {src:'電商',row:7,id:'210',shared:'80',name:'商城專推圖素材-優惠券50元',pos:'大法商城 網頁內頁',type:'⭐新視覺',review:'',designer:'',exec:'',filed:'2026-07-23',eta:'',due:'2026-08-06',requester:'90分'},
+    {src:'電商',row:8,id:'211',shared:'81',name:'商城專推圖素材-組數優惠',pos:'大法商城 網頁內頁',type:'⭐新視覺',review:'',designer:'',exec:'',filed:'2026-07-23',eta:'',due:'2026-08-06',requester:'90分'},
+    {src:'電商',row:9,id:'212',shared:'82',name:'MOMO 益生菌商品主圖(品萱)',pos:'MOMO商品主圖',type:'⭐新視覺',review:'',designer:'小容',exec:'',filed:'2026-07-22',eta:'',due:'2026-08-05',requester:'90分'},
+    {src:'電商',row:10,id:'213',shared:'83',name:'MOMO 8月益生菌包套IG限動圖',pos:'MOMO IG圖',type:'⭐新視覺',review:'',designer:'',exec:'',filed:'2026-07-24',eta:'',due:'2026-07-27',requester:'90分'},
+    {src:'電商',row:11,id:'',shared:'',name:'雙11電商站內使用BN-易利氣',pos:'',type:'延伸Resize',review:'製作中',designer:'小容',exec:'待排程',filed:'2026-10-16',eta:'',due:'2026-10-27',requester:'Tifa'},
+    {src:'電商',row:12,id:'',shared:'',name:'雙11電商站內使用BN-易利氣',pos:'',type:'延伸Resize',review:'製作中',designer:'孟雅',exec:'待排程',filed:'2026-10-16',eta:'',due:'2026-10-27',requester:'Tifa'},
+    {src:'電商',row:13,id:'',shared:'',name:'雙11電商站內使用BN-SW',pos:'',type:'延伸Resize',review:'製作中',designer:'gigi',exec:'待排程',filed:'2026-10-16',eta:'',due:'2026-10-27',requester:'Tifa'},
+    {src:'行銷',row:4,name:'益生菌粉劑｜外盒/鋁袋',brand:'若元',pos:'外盒/鋁袋',type:'包裝',review:'暫停',designer:'孟雅',exec:'',filed:'2026-01-05',eta:'',due:'',warehouse:'',actual:''},
+    {src:'行銷',row:5,name:'易利氣酸痛藥布｜數位DGC素材',brand:'易利氣',pos:'數位DGC素材',type:'數位',review:'製作中',designer:'小容',exec:'過稿中',filed:'2026-06-24',eta:'2026-07-15',due:'2026-08-14',warehouse:'',actual:'2026-09-03'},
+    {src:'行銷',row:6,name:'全功能(保暖絨)｜蝦皮商品頁',brand:'SW',pos:'蝦皮商品頁',type:'平面',review:'製作中',designer:'Gigi',exec:'過稿中',filed:'2026-07-24',eta:'2026-07-31',due:'',warehouse:'',actual:'',requester:'Tifa',note:'商品介紹圖：寬不超過1000*高不超過1500'},
+    {src:'行銷',row:7,name:'改源IB｜茆茆醫師KV製作(兩張)',brand:'改源',pos:'茆茆醫師KV製作(兩張)',type:'平面',review:'製作中',designer:'小容',exec:'',filed:'2026-09-08',eta:'2026-09-14',due:'',warehouse:'',actual:'2026-09-14',requester:'Apple'},
+    {src:'行銷',row:8,name:'磁力｜躍獅用圖',brand:'易利氣',pos:'躍獅用圖',type:'平面',review:'製作中',designer:'小容',exec:'',filed:'2026-09-15',eta:'2026-09-18',due:'',warehouse:'',actual:'2026-09-16',requester:'Tifa',note:'EIP'},
+    {src:'行銷',row:9,name:'電器口｜電器口',brand:'大法',pos:'電器口',type:'平面',review:'製作中',designer:'小容',exec:'',filed:'2026-09-29',eta:'',due:'2026-10-10',warehouse:'',actual:'',requester:'Tifa'},
+    {src:'行銷',row:10,name:'若元益生菌食品｜素材更換代言人照片',brand:'大法',pos:'素材更換代言人照片',type:'平面',review:'製作中',designer:'小容',exec:'',filed:'2026-09-29',eta:'',due:'',warehouse:'',actual:'',requester:'Apple'},
+    {src:'行銷',row:11,name:'易利氣酸痛藥布｜中判2入199插卡',brand:'易利氣',pos:'中判2入199插卡',type:'平面',review:'製作中',designer:'小容',exec:'',filed:'2026-10-05',eta:'',due:'',warehouse:'',actual:'',requester:'Tifa'},
+    {src:'行銷',row:12,name:'改源IB｜6秒素材-改直式放ig',brand:'改源',pos:'6秒素材-改直式放ig',type:'影片',review:'製作中',designer:'Gigi',exec:'',filed:'2026-10-15',eta:'',due:'',warehouse:'',actual:'',requester:'Apple'}
   ],
-  tickets: [
-    { src:'電商', name:'商城益生菌8月BN',       sub:'#53 · 圖文BN(手機)', pos:'大法商城圖文BN(手機)', designer:'孟雅', exec:'製作中', dl:'6/26', dlLevel:'soon', mgr:'製作中' },
-    { src:'電商', name:'商城易利氣8月BN',        sub:'#60 · FB BN',        pos:'FB BN',               designer:'Gigi', exec:'待排程', dl:'7/10', dlLevel:'',     mgr:'製作中' },
-    { src:'電商', name:'商城易利氣父親節包裝BN', sub:'#70 · PC版',         pos:'大法商城 BN上方輪播PC版', designer:'小容', exec:'待排程', dl:'7/30', dlLevel:'', mgr:'製作中' },
-    { src:'電商', name:'商城易利氣父親節包裝BN', sub:'#70 · 手機版',       pos:'大法商城 BN上方輪播手機版', designer:'小容', exec:'待排程', dl:'7/30', dlLevel:'', mgr:'製作中' },
-    { src:'電商', name:'商城益生菌9月BN',        sub:'#54 · 圖文BN(手機)', pos:'大法商城圖文BN(手機)', designer:'Gigi', exec:'製作中', dl:'6/25', dlLevel:'soon', mgr:'製作中' },
-    { src:'電商', name:'商城易利氣9月BN',        sub:'#55 · 圖文BN(手機)', pos:'大法商城圖文BN(手機)', designer:'Gigi', exec:'製作中', dl:'6/25', dlLevel:'soon', mgr:'製作中' },
-    { src:'電商', name:'商城益生菌10月投廣BN',   sub:'#63 · FB BN',        pos:'FB BN',               designer:'Gigi', exec:'待排程', dl:'9/10', dlLevel:'',     mgr:'製作中' },
-    { src:'電商', name:'商城益生菌11月投廣BN',   sub:'#65 · FB BN',        pos:'FB BN',               designer:'小容', exec:'待排程', dl:'10/12',dlLevel:'',     mgr:'製作中' },
-    { src:'電商', name:'商城益生菌12月投廣BN',   sub:'#67 · FB BN',        pos:'FB BN',               designer:'孟雅', exec:'待排程', dl:'11/10',dlLevel:'',     mgr:'製作中' },
-    { src:'行銷', name:'脫酸寧EX 外盒/瓶標',    sub:'包裝', pos:'包裝',    designer:'小容', exec:'待排程', dl:'6/30', dlLevel:'soon', mgr:'製作中' },
-    { src:'行銷', name:'改源IB HS素材',          sub:'數位', pos:'數位',    designer:'孟雅', exec:'待排程', dl:'6/30', dlLevel:'soon', mgr:'製作中' },
-    { src:'行銷', name:'改源IB 數位DGC素材',     sub:'數位', pos:'數位',    designer:'小容', exec:'待排程', dl:'7/20', dlLevel:'',     mgr:'製作中' },
-    { src:'行銷', name:'易利氣 數位DGC素材',     sub:'數位', pos:'數位',    designer:'Gigi', exec:'待排程', dl:'7/31', dlLevel:'',     mgr:'製作中' },
-    { src:'社群', name:'易利氣 數位DGC素材×3',  sub:'FB/IG', pos:'FB/IG',  designer:'Gigi', exec:'製作中', dl:'6/28', dlLevel:'hot',  mgr:'待審核' },
-    { src:'社群', name:'改源IB 數位DGC素材×3',  sub:'FB/IG', pos:'FB/IG',  designer:'Gigi', exec:'製作中', dl:'6/28', dlLevel:'hot',  mgr:'製作中' },
-    { src:'社群', name:'改源IB 7/7世界巧克力日', sub:'FB/IG', pos:'FB/IG', designer:'Gigi', exec:'待排程', dl:'7/6',  dlLevel:'',     mgr:'待審核' },
-    { src:'社群', name:'改源IB 經痛類型衛教圖',  sub:'FB/IG', pos:'FB/IG', designer:'Gigi', exec:'待排程', dl:'7/10', dlLevel:'',     mgr:'待審核' },
-    { src:'社群', name:'易利氣 網頁特點轉化',    sub:'FB/IG', pos:'FB/IG', designer:'Gigi', exec:'待排程', dl:'',     dlLevel:'',     mgr:'製作中' },
-    { src:'社群', name:'Wakamoto 空心菜觀察日記',sub:'FB',    pos:'FB',    designer:'Gigi', exec:'待排程', dl:'',     dlLevel:'',     mgr:'製作中' },
+  done:[
+    {src:'電商',name:'若元食品益生菌限搶',pos:'momo FB曝光',type:'延伸Resize',designer:'小容',doneDate:'2026-06-04'},
+    {src:'電商',name:'易利氣7月外站',pos:'momo 品牌站內BN',type:'延伸Resize',designer:'小容',doneDate:'2026-06-15'}
   ]
 };
 
-let allData = null, currentTab = 'all';
+/* ── 狀態 ── */
+let DATA = null, IS_DEMO = false;
+const VIEW = { tab:'active', designer:'all', q:'' };
 
-const srcBadge = s => `<span class="badge ${{電商:'b-ec',行銷:'b-mkt',社群:'b-soc'}[s]||''}">${s}</span>`;
-const execBadge = s => `<span class="badge ${{待排程:'b-wait',製作中:'b-prog',過稿中:'b-proof',已完稿:'b-done',待審核:'b-review'}[s]||'b-wait'}">${s}</span>`;
-const mgrBadge = s => `<span class="badge ${s==='待審核'?'b-review':'b-ok'}">${s}</span>`;
-const dlSpan = (dl,lv) => dl ? `<span class="dl ${lv||''}">${dl}</span>` : '<span class="dl">—</span>';
-const barColor = n => ({孟雅:'var(--bar-a)',小容:'var(--bar-b)',Gigi:'var(--bar-c)'}[n]||'#aaa');
+/* ── 工具 ── */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pd = s => { if(!s) return null; const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+const today0 = () => { const t=new Date(); return new Date(t.getFullYear(),t.getMonth(),t.getDate()); };
+const md = s => { const d=pd(s); return d ? `${d.getMonth()+1}/${d.getDate()}` : ''; };
+const daysTo = s => { const d=pd(s); return d ? Math.round((d-today0())/864e5) : null; };
+const fmtPts = n => (Math.round(n*10)/10).toString();
+const normType = s => String(s||'').replace(/[⭐\s]/g,'');
 
-function render(data) {
-  allData = data;
-  const s = data.stats;
+function weightOf(type, weights){
+  const k = normType(type);
+  const keys = Object.keys(weights);
+  let hit = keys.find(x => normType(x) === k);
+  if (!hit && k) hit = keys.find(x => normType(x) && (k.includes(normType(x)) || normType(x).includes(k)));
+  return hit ? Number(weights[hit]) : (weights['其他'] ?? 1);
+}
 
-  document.getElementById('s-total').textContent = s.total;
-  document.getElementById('s-total-sub').textContent = `電商 ${s.ec} · 行銷 ${s.mkt} · 社群 ${s.soc}`;
-  document.getElementById('s-review').textContent = s.review;
-  document.getElementById('s-noDL').textContent = s.noDL;
-  document.getElementById('s-done').textContent = s.done;
-  document.getElementById('s-done-sub').textContent = `電商 ${s.ec_done} · 行銷 ${s.mkt_done} · 社群 ${s.soc_done}`;
+/* ── 資料整理（所有統計都在前端計算）── */
+function prepare(data){
+  const roster = data.config.designers.map(d => d.name);
+  const canon = n => { const s=String(n||'').trim(); if(!s) return ''; return roster.find(r => r.toLowerCase()===s.toLowerCase()) || s; };
+  data.tickets.forEach(t => {
+    t.designerRaw = t.designer;
+    t.designer = canon(t.designer);
+    t.review = t.review || '待審核';
+    t.exec = t.exec === '已完成' ? '已完稿' : (t.exec || '');
+    t.isDone = t.exec === '已完稿';
+    t.isPaused = t.review === '暫停';
+    t.isActive = !t.isDone && !t.isPaused;
+    const dates = [t.due, t.warehouse].filter(Boolean).sort();
+    t.deadline = dates[0] || '';
+    t.dleft = daysTo(t.deadline);
+    t.dl = t.dleft===null ? 'none' : t.dleft<0 ? 'over' : t.dleft<=SOON_DAYS ? 'soon' : 'ok';
+    t.weight = weightOf(t.type, data.config.weights);
+  });
+  data.done.forEach(d => d.designer = canon(d.designer));
+  // 名單外的設計師也列出來，避免工單被漏算
+  const extra = [...new Set(data.tickets.filter(t=>t.isActive && t.designer && !roster.includes(t.designer)).map(t=>t.designer))];
+  data.roster = data.config.designers.map(d => ({...d, reserve:Number(d.reserve)||0})).concat(extra.map(n => ({name:n, reserve:0, extra:true})));
+  return data;
+}
 
-  const hot = data.tickets.filter(t => t.dlLevel === 'hot');
+/* ── 主渲染 ── */
+function render(data, demo){
+  DATA = prepare(data); IS_DEMO = demo;
+  const T = DATA.tickets, active = T.filter(t=>t.isActive);
+  const ec = active.filter(t=>t.src==='電商').length, mkt = active.length-ec;
+  const review = T.filter(t=>t.review==='待審核' && !t.isDone);
+  const over = active.filter(t=>t.dl==='over'), soon = active.filter(t=>t.dl==='soon');
+  const now = today0();
+  const monthDone = DATA.done.filter(d => { const x=pd(d.doneDate); return x && x.getFullYear()===now.getFullYear() && x.getMonth()===now.getMonth(); });
+
+  set('s-active', active.length);
+  set('s-active-sub', `電商 ${ec} · 行銷 ${mkt}　|　暫停 ${T.filter(t=>t.isPaused).length}`);
+  set('s-review', review.length);
+  set('s-review-sub', review.length ? `其中 ${review.filter(t=>!t.designer).length} 件尚未指派設計師` : '目前沒有待審工單');
+  document.getElementById('s-due').innerHTML = `${over.length}<small>／ ${soon.length}</small>`;
+  set('s-due-sub', `另有 ${active.filter(t=>t.dl==='none').length} 件未填截止日`);
+  set('s-month-lbl', `${now.getMonth()+1} 月完成（已歸檔）`);
+  set('s-month', monthDone.length);
+  set('s-month-sub', `電商 ${monthDone.filter(d=>d.src==='電商').length} · 行銷 ${monthDone.filter(d=>d.src==='行銷').length}　|　累計 ${DATA.done.length}`);
+
+  // 警示列
+  const unassigned = active.filter(t=>!t.designer && t.review!=='待審核');
+  const msgs = [];
+  if (over.length) msgs.push(`<a onclick="goTab('due')">⚠ ${over.length} 件已逾期</a>`);
+  if (soon.length) msgs.push(`<a onclick="goTab('due')">${soon.length} 件 7 天內到期</a>`);
+  if (unassigned.length) msgs.push(`${unassigned.length} 件已核准但未指派設計師`);
+  const hotDesigners = DATA.roster.filter(d => utilOf(d).util >= 1).map(d=>d.name);
+  if (hotDesigners.length) msgs.push(`${hotDesigners.join('、')} 負載已滿`);
   const ab = document.getElementById('alert-bar');
-  if (hot.length || s.noDL > 0) {
-    ab.style.display = 'flex';
-    document.getElementById('alert-text').textContent =
-      `${hot.length} 張工單今日截止或已逾期 · ${s.noDL} 件進行中工單未填提稿日`;
-  } else { ab.style.display = 'none'; }
+  ab.style.display = msgs.length ? 'flex' : 'none'; ab.innerHTML = msgs.join('<span>·</span>');
 
-  document.getElementById('designer-grid').innerHTML = data.designers.map(d => {
-    const total = d.prog + d.proof + d.wait;
-    const pct = Math.min(Math.round(total / 25 * 100), 100);
-    const tagCls = {hot:'dtag-hot',ok:'dtag-ok',mid:'dtag-mid'}[d.urgentLevel]||'dtag-mid';
-    const icon = {hot:'⏰',ok:'✓',mid:'📅'}[d.urgentLevel]||'';
-    return `<div class="dcard">
-      <div class="dcard-head">
-        <div class="avatar ${d.av}">${d.init}</div>
-        <div><div class="dname">${d.name}</div><div class="dtotal">合計 ${total} 件進行中</div></div>
+  // demo 提示
+  const db = document.getElementById('demo-bar');
+  if (demo) { db.style.display='block'; db.textContent = demo; }
+  else if (!DATA.config.configured) { db.style.display='block'; db.textContent='試算表尚未建立「設定」分頁，負載計算使用預設值。請在 Apps Script 執行一次 setupV3。'; }
+  else db.style.display='none';
+
+  set('load-note', `負載 ＝ 進行中工單點數 ÷ 可用點數（滿載 ${DATA.config.fullLoad} 點 × (1 − 保留%)）｜權重與保留% 在試算表「設定」分頁調整`);
+
+  renderDesigners(); renderDesignerSelect(); renderAll(); renderChecks();
+  set('update-time', `資料時間 ${new Date().toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}`);
+}
+function set(id, v){ document.getElementById(id).textContent = v; }
+
+function utilOf(d){
+  const mine = DATA.tickets.filter(t => t.isActive && t.designer===d.name);
+  const ecP = mine.filter(t=>t.src==='電商').reduce((s,t)=>s+t.weight,0);
+  const mkP = mine.filter(t=>t.src==='行銷').reduce((s,t)=>s+t.weight,0);
+  const full = Number(DATA.config.fullLoad)||10;
+  const avail = full * (1 - Math.min(d.reserve,100)/100);
+  return { mine, ecP, mkP, full, avail, util: avail>0 ? (ecP+mkP)/avail : (ecP+mkP>0 ? Infinity : 0) };
+}
+
+function renderDesigners(){
+  const now = today0();
+  document.getElementById('designer-grid').innerHTML = DATA.roster.map(d => {
+    const u = utilOf(d), m = u.mine;
+    const cnt = s => m.filter(t => (t.exec||'') === s).length;
+    const pct = x => Math.max(0, x/u.full*100);
+    const resW = Math.min(d.reserve,100), ecW = pct(u.ecP), mkW = pct(u.mkP);
+    const overflow = resW+ecW+mkW > 100;
+    const scale = overflow ? 100/(resW+ecW+mkW) : 1;
+    const uPct = isFinite(u.util) ? Math.round(u.util*100) : 999;
+    const uCls = u.util>=1 ? 'c-danger' : u.util>=.75 ? 'c-warn' : 'c-primary';
+    const next = m.filter(t=>t.deadline).sort((a,b)=>a.deadline.localeCompare(b.deadline))[0];
+    let tag;
+    if (!m.length) tag = `<span class="dtag t-ok">✓ 目前無進行中工單</span>`;
+    else if (!next) tag = `<span class="dtag t-mid">📅 進行中工單皆未填截止日</span>`;
+    else { const lv = next.dl==='over'?'t-hot':next.dl==='soon'?'t-mid':'t-ok';
+      const rel = next.dleft<0 ? `逾期 ${-next.dleft} 天` : next.dleft===0 ? '今天截止' : `${next.dleft} 天後`;
+      tag = `<span class="dtag ${lv}" title="${esc(next.name)}">${next.dl==='over'?'⏰':'📅'} ${rel}｜${esc(next.name)}</span>`; }
+    const doneM = DATA.done.filter(x => { const dd=pd(x.doneDate); return x.designer===d.name && dd && dd.getMonth()===now.getMonth() && dd.getFullYear()===now.getFullYear(); }).length;
+    return `<div class="dcard ${VIEW.designer===d.name?'on':''}" onclick="pickDesigner('${esc(d.name)}')">
+      <div class="dhead">
+        <div class="avatar">${esc(d.name.slice(0,1))}</div>
+        <div><div class="dname">${esc(d.name)}${d.extra?' <span class="badge b-empty">名單外</span>':''}</div>
+          <div class="dmeta">${m.length} 件 · ${fmtPts(u.ecP+u.mkP)} 點${d.reserve?`　保留 ${d.reserve}%`:''}</div></div>
+        <div class="util"><div class="util-num ${uCls}">${u.avail>0||!m.length ? (uPct>=999?'—':uPct+'%') : '—'}</div><div class="util-lbl">負載</div></div>
       </div>
-      <div class="drow"><span class="drow-label">製作中</span><span class="drow-num">${d.prog}</span></div>
-      <div class="drow"><span class="drow-label">過稿中</span><span class="drow-num">${d.proof}</span></div>
-      <div class="drow"><span class="drow-label">待排程</span><span class="drow-num">${d.wait}</span></div>
-      <div class="bar-wrap"><div class="bar" style="width:${pct}%;background:${barColor(d.name)}"></div></div>
-      <span class="dtag ${tagCls}">${icon} ${d.urgent}</span>
+      <div class="loadbar ${overflow||u.util>=1?'over':''}" title="保留 ${d.reserve}% · 電商 ${fmtPts(u.ecP)} 點 · 行銷 ${fmtPts(u.mkP)} 點 / 滿載 ${u.full} 點">
+        <div class="seg seg-res" style="width:${resW*scale}%"></div>
+        <div class="seg seg-ec" style="width:${ecW*scale}%"></div>
+        <div class="seg seg-mkt" style="width:${mkW*scale}%"></div>
+      </div>
+      <div class="drows" style="margin-top:12px">
+        <div class="drow"><b>${cnt('製作中')}</b><span>製作中</span></div>
+        <div class="drow"><b>${cnt('過稿中')}</b><span>過稿中</span></div>
+        <div class="drow"><b>${cnt('待排程')}</b><span>待排程</span></div>
+        <div class="drow"><b>${cnt('')}</b><span>未更新</span></div>
+      </div>
+      ${tag}
+      <div class="dfoot"><span>電商 ${fmtPts(u.ecP)} · 行銷 ${fmtPts(u.mkP)} 點</span><span>本月已歸檔 ${doneM} 件</span></div>
     </div>`;
   }).join('');
-
-  document.getElementById('update-time').textContent =
-    new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'}) + ' 更新';
-  renderTable();
 }
 
-function renderTable() {
-  if (!allData) return;
-  let rows = allData.tickets;
-  if (currentTab === '電商') rows = rows.filter(t => t.src === '電商');
-  else if (currentTab === '行銷') rows = rows.filter(t => t.src === '行銷');
-  else if (currentTab === '社群') rows = rows.filter(t => t.src === '社群');
-  else if (currentTab === '待審核') rows = rows.filter(t => t.mgr === '待審核');
+function renderDesignerSelect(){
+  const sel = document.getElementById('f-designer');
+  const names = DATA.roster.map(d=>d.name);
+  sel.innerHTML = `<option value="all">全部設計師</option>` + names.map(n=>`<option ${VIEW.designer===n?'selected':''}>${esc(n)}</option>`).join('') + `<option value="__none" ${VIEW.designer==='__none'?'selected':''}>未指派</option>`;
+}
 
+const TABS = [
+  ['active','進行中', t=>t.isActive],
+  ['電商','電商', t=>t.isActive && t.src==='電商'],
+  ['行銷','行銷', t=>t.isActive && t.src==='行銷'],
+  ['review','待主管審核', t=>t.review==='待審核' && !t.isDone],
+  ['due','逾期／將到期', t=>t.isActive && (t.dl==='over'||t.dl==='soon')],
+  ['paused','暫停', t=>t.isPaused],
+  ['done','已完稿未歸檔', t=>t.isDone]
+];
+function baseRows(){
+  return DATA.tickets.filter(t => VIEW.designer==='all' || (VIEW.designer==='__none' ? !t.designer : t.designer===VIEW.designer));
+}
+function renderTabs(){
+  const base = baseRows();
+  document.getElementById('tabs').innerHTML = TABS.map(([k,l,f]) => {
+    const n = base.filter(f).length;
+    if (!n && !['active','電商','行銷','review','due'].includes(k)) return '';
+    return `<button class="tab ${VIEW.tab===k?'on':''}" onclick="goTab('${k}')">${l}<span class="n">${n}</span></button>`;
+  }).join('');
+}
+function renderTable(){
+  const f = (TABS.find(x=>x[0]===VIEW.tab)||TABS[0])[2];
+  const q = VIEW.q.toLowerCase();
+  let rows = baseRows().filter(f).filter(t => !q || [t.name,t.pos,t.brand,t.id,t.requester,t.note].join(' ').toLowerCase().includes(q));
+  rows.sort((a,b) => (a.deadline||'9999') .localeCompare(b.deadline||'9999') || a.src.localeCompare(b.src));
   const tb = document.getElementById('tbody');
-  if (!rows.length) {
-    tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#aaa">沒有符合條件的工單</td></tr>';
-    return;
+  if (!rows.length){ tb.innerHTML = '<tr class="empty"><td colspan="8">沒有符合條件的工單</td></tr>'; return; }
+  tb.innerHTML = rows.map(t => {
+    const sub = t.src==='電商'
+      ? [t.id?`#${t.id}`:'', t.shared?`共用視覺 ${t.shared}`:'', t.type].filter(Boolean).join(' · ')
+      : [t.brand, t.type, t.requester?`填單 ${t.requester}`:''].filter(Boolean).join(' · ');
+    const rel = t.dleft===null ? '' : t.dleft<0 ? `逾期 ${-t.dleft} 天` : t.dleft===0 ? '今天' : t.dleft<=SOON_DAYS ? `剩 ${t.dleft} 天` : '';
+    const dlCell = t.due
+      ? `<span class="dl ${t.dl==='over'||t.dl==='soon'? (t.due===t.deadline?t.dl:'') :''}">${md(t.due)}${t.due===t.deadline&&rel?`<span class="rel">${rel}</span>`:''}</span>`
+      : '<span class="dl muted">—</span>';
+    const wh = t.warehouse ? `<span class="dl2 ${t.warehouse===t.deadline&&t.dl!=='ok'?'dl '+t.dl:''}">入倉 ${md(t.warehouse)}${t.warehouse===t.deadline&&rel?' · '+rel:''}</span>` : '';
+    return `<tr class="${t.isActive && t.dl==='over'?'row-over':t.isActive && t.dl==='soon'?'row-soon':''}">
+      <td><span class="badge ${t.src==='電商'?'b-ec':'b-mkt'}">${t.src}</span></td>
+      <td><div class="tn">${esc(t.name)}</div><div class="ts">${esc(sub)}</div></td>
+      <td style="font-size:11.5px;color:var(--text2);max-width:170px">${t.pos?esc(t.pos):'<span class="muted">未填</span>'}</td>
+      <td>${t.designer?esc(t.designer):'<span class="muted">未指派</span>'}</td>
+      <td>${reviewBadge(t.review)}</td>
+      <td>${execBadge(t.exec)}</td>
+      <td><span class="dl">${t.eta?md(t.eta):'<span class="muted">—</span>'}</span></td>
+      <td>${dlCell}${wh}</td>
+    </tr>`;
+  }).join('');
+}
+const reviewBadge = s => `<span class="badge ${{待審核:'b-review',暫停:'b-pause'}[s]||'b-done'}">${esc(s)}</span>`;
+const execBadge = s => s ? `<span class="badge ${{待排程:'b-wait',製作中:'b-prog',過稿中:'b-proof',已完稿:'b-done'}[s]||'b-wait'}">${esc(s)}</span>` : '<span class="badge b-empty">未更新</span>';
+
+function renderAll(){ renderTabs(); renderTable(); document.querySelectorAll('.dcard').forEach(()=>{}); }
+function goTab(k){ VIEW.tab=k; renderAll(); document.querySelector('.controls').scrollIntoView({behavior:'smooth',block:'start'}); }
+function pickDesigner(n){ VIEW.designer = VIEW.designer===n ? 'all' : n; renderDesigners(); renderDesignerSelect(); renderAll(); }
+
+/* ── 資料檢查：列出需要回試算表補填的地方 ── */
+function renderChecks(){
+  const roster = DATA.config.designers.map(d=>d.name);
+  const out = [];
+  DATA.tickets.forEach(t => {
+    const iss = [];
+    if (t.isActive && !t.deadline) iss.push('未填截止日');
+    if (t.src==='電商' && t.isActive && !t.pos) iss.push('未填媒體版位');
+    if (t.src==='電商' && t.isActive && !t.id) iss.push('未填案件編號');
+    if (t.isActive && t.review!=='待審核' && !t.designer) iss.push('已核准未指派');
+    if (t.designer && !roster.includes(t.designer)) iss.push(`設計師「${t.designer}」不在名單`);
+    if (t.designerRaw && t.designerRaw!==t.designer) iss.push(`設計師寫法「${t.designerRaw}」`);
+    if (t.actual && !t.isDone) iss.push('已填實際完成但未改已完稿');
+    if (t.isActive && t.review!=='待審核' && !t.exec) iss.push('執行狀態未更新');
+    if (t.isDone) iss.push('已完稿，可移到「已完成」');
+    if (iss.length) out.push({t, iss});
+  });
+  const ids = {};
+  DATA.tickets.filter(t=>t.src==='電商'&&t.id).forEach(t => (ids[t.id] = ids[t.id]||[]).push(t));
+  Object.entries(ids).forEach(([id,arr]) => { if (new Set(arr.map(x=>x.name)).size>1) arr.forEach(t => { const o=out.find(x=>x.t===t); const m=`案件編號 ${id} 重複`; o?o.iss.push(m):out.push({t,iss:[m]}); }); });
+  set('check-sum', `資料檢查　${out.length} 筆工單有欄位待補`);
+  document.getElementById('check-list').innerHTML = out.length ? out.map(({t,iss}) =>
+    `<div class="check-item"><span class="badge ${t.src==='電商'?'b-ec':'b-mkt'}">${t.src}</span><span style="color:var(--text3)">第 ${t.row} 列</span><span>${esc(t.name)}</span><span class="iss">${esc(iss.join('、'))}</span></div>`
+  ).join('') : '<div class="check-item"><span></span><span></span><span>都填好了 👍</span><span></span></div>';
+}
+
+/* ── 讀取 ── */
+let _cd = REFRESH_SEC;
+async function refreshData(){
+  _cd = REFRESH_SEC;
+  const dot = document.getElementById('api-dot'), lbl = document.getElementById('api-label');
+  try {
+    const res = await fetch(API_URL, {cache:'no-store'});
+    const data = await res.json();
+    if (data.version !== 3 || !Array.isArray(data.tickets)) throw new Error('old');
+    dot.className='api-dot live'; lbl.textContent='即時資料（Sheets 同步）';
+    render(data, false);
+  } catch(e) {
+    dot.className='api-dot'; lbl.textContent = e.message==='old' ? 'API 仍是舊版，顯示示意資料' : '無法連線 API，顯示示意資料';
+    if (!DATA || IS_DEMO) render(JSON.parse(JSON.stringify(DEMO)), '目前顯示示意資料（取自 10/19 試算表內容）。Apps Script 換成 v3 並重新部署後會自動切換為即時資料。');
   }
-  tb.innerHTML = rows.map(t => `<tr>
-    <td>${srcBadge(t.src)}</td>
-    <td><div class="ticket-name">${t.name}</div><div class="ticket-sub">${t.sub}</div></td>
-    <td style="font-size:11px;color:var(--text2);max-width:140px">${t.pos}</td>
-    <td style="font-size:12px">${t.designer||'<span style="color:#ccc">未分配</span>'}</td>
-    <td>${execBadge(t.exec)}</td>
-    <td>${dlSpan(t.dl,t.dlLevel)}</td>
-    <td>${mgrBadge(t.mgr)}</td>
-  </tr>`).join('');
 }
-
-function setTab(val, el) {
-  currentTab = val;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-  el.classList.add('on');
-  renderTable();
-}
-
-// ── Auto refresh ──
-let _cd = 30, _timer = null;
-const _cdEl = () => document.getElementById('countdown');
-
-function startAutoRefresh() {
-  if (_timer) clearInterval(_timer);
-  _cd = 30;
-  _cdEl() && (_cdEl().textContent = `· ${_cd}s 後自動更新`);
-  _timer = setInterval(() => {
-    _cd--;
-    _cdEl() && (_cdEl().textContent = `· ${_cd}s 後自動更新`);
-    if (_cd <= 0) { _cd = 30; refreshData(); }
-  }, 1000);
-}
-
-async function refreshData() {
-  _cd = 30;
-  if (API_URL) {
-    try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      document.getElementById('api-dot').className = 'api-dot live';
-      document.getElementById('api-label').textContent = '即時資料（Sheets 同步）';
-      render(data);
-    } catch(e) {
-      document.getElementById('api-label').textContent = '無法連線，顯示上次資料';
-    }
-  } else {
-    render(DEMO);
-  }
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  refreshData();
-  startAutoRefresh();
-});
+setInterval(() => { _cd--; document.getElementById('countdown').textContent = `· ${Math.floor(_cd/60)}:${String(_cd%60).padStart(2,'0')} 後更新`; if (_cd<=0) refreshData(); }, 1000);
+window.addEventListener('DOMContentLoaded', refreshData);
 </script>
 </body>
 </html>
